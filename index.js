@@ -4,7 +4,8 @@ const crypto = require('crypto');
 const iconv = require('iconv-lite');
 //const convert = require('encoding').convert
 
-const fpath = process.argv[2];
+//const fpath = process.argv[2];
+const fpath = process.cwd();
 
 let all_songs = [];
 
@@ -18,8 +19,10 @@ const courseTypes = {
 }
 
 async function main() {
-	const category_array = await fs.promises.readdir(fpath);
 
+	console.log("in main");
+	const category_array = await fs.promises.readdir(fpath);
+	console.log("category_array",category_array);
 	for (let category_raw of category_array) {
 		const category = parseInt(category_raw);
 		if (isNaN(category))
@@ -57,6 +60,7 @@ async function main() {
 				},
 				volume: 1,
 				id: song_id,
+				music_type: "ogg",
 				preview: null,
 				order: song_id,
 				title_lang: {
@@ -119,9 +123,19 @@ async function main() {
 			all_songs.push(res);
 		}
 	}
+	json_str = "[";
 	for (let song of all_songs) {
 		console.log(JSON.stringify(song));
+		json_str +=JSON.stringify(song)+",";
 	}
+	json_str+="]";
+	console.log(json_str);
+	fs.writeFile('songs.json', json_str, 'utf8',function (err, stats) {
+	   if (err) {
+		   return console.error(err);
+	   }
+	});
+
 }
 
 main();
